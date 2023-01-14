@@ -25,6 +25,14 @@ def get_week(date, date_format='ymd', delimiter='-'):
     else: return week.lstrip('0')
     
 
+def get_assistants(file_name, course):
+    with open(file_name, 'r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            if row['Kurs'] == course and row['Lärare'] != '' and row['Undervisningstyp'] == 'Laboration':
+                return [ name.split()[0] for name in row['Lärare'].split(',') ]
+
+
 def format_timeedit_categories(input_csv, output_csv, start_line=3):
     with open(input_csv, 'r+') as csv_file:
         lines = csv_file.readlines()

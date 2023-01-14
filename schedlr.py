@@ -55,7 +55,7 @@ def initialize_week_schedule(file_name, relevant_activities = {
                     if row['Kurs'] == 'TDP007' and row['Undervisningstyp'] == 'Seminarium':
                         row['Undervisningstyp'] = 'Seminarium ' + str(counter)
                         counter += 1
-                    
+                        
                     activity_date = row['Startdatum']                    
                     week = get_week(activity_date)
                     work_time = f"{row['Starttid']}-{row['Sluttid']}"
@@ -71,6 +71,7 @@ def initialize_week_schedule(file_name, relevant_activities = {
 
 
 def main():
+    csv_file = sys.argv[1]
     # TODO: CLI setup for wanted values?
     relevant_activities = {
         'TDP007': ['Laboration', 'Seminarium', 'Dugga'],
@@ -80,7 +81,7 @@ def main():
     # wanted_info = ['Kurs', 'Undervisningstyp', 'Information till student']
 
     ws = initialize_week_schedule(csv_file, relevant_activities)
-    
+    print(json.dumps(ws, indent=2))
 
     
 if __name__ == "__main__":

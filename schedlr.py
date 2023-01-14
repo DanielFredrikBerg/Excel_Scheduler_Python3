@@ -33,7 +33,8 @@ def format_timeedit_categories(csv, start_line=3):
         csv_file.writelines(lines[start_line:])
 
         
-def initialize_week_schedule(file_name, relevant_activities):
+def initialize_week_schedule(file_name, relevant_activities,
+                             wanted_info = ['Kurs', 'Undervisningstyp', 'Information till student']):
     with open(file_name, 'r') as csv_file:
         week_schedule = {}
         csv_reader = csv.DictReader(csv_file)
@@ -55,11 +56,7 @@ def initialize_week_schedule(file_name, relevant_activities):
                        and activity_date not in week_schedule[week]:
                         week_schedule[week][activity_date] = {}
                     if week in week_schedule and activity_date in week_schedule[week]:
-                        week_schedule[week][activity_date][work_time] = [
-                            row['Kurs'],
-                            row['Undervisningstyp'],
-                            row['Information till student']
-                        ]  
+                        week_schedule[week][activity_date][work_time] = [ row[info] for info in wanted_info ]
     return week_schedule
 
 # TODO: CLI setup for wanted values?
@@ -68,6 +65,8 @@ relevant_activities = {
     'TDP019': ['Handledning'],
 }
 
+
+# wanted_info = ['Kurs', 'Undervisningstyp', 'Information till student']
 
 ws = initialize_week_schedule(sys.argv[1], relevant_activities)
 print(json.dumps(ws, indent=2))

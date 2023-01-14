@@ -59,15 +59,24 @@ def initialize_week_schedule(file_name, relevant_activities,
                         week_schedule[week][activity_date][work_time] = [ row[info] for info in wanted_info ]
     return week_schedule
 
-# TODO: CLI setup for wanted values?
-relevant_activities = {
-    'TDP007': ['Laboration', 'Seminarium', 'Dugga'],
-    'TDP019': ['Handledning'],
-}
+
+def main(csv_file = sys.argv[1]):
+    # TODO: CLI setup for wanted values?
+    relevant_activities = {
+        'TDP007': ['Laboration', 'Seminarium', 'Dugga'],
+        'TDP019': ['Handledning'],
+    }
+
+    # wanted_info = ['Kurs', 'Undervisningstyp', 'Information till student']
+
+    ws = initialize_week_schedule(csv_file, relevant_activities)
+    print(json.dumps(ws, indent=2)) 
+
+    
+if __name__ == "__main__":
+    main()
+else:
+    print("Schedlr imported as module")
 
 
-# wanted_info = ['Kurs', 'Undervisningstyp', 'Information till student']
-
-ws = initialize_week_schedule(sys.argv[1], relevant_activities)
-print(json.dumps(ws, indent=2))
 

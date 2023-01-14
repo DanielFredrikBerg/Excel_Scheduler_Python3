@@ -25,16 +25,18 @@ def get_week(date, date_format='ymd', delimiter='-'):
     else: return week.lstrip('0')
     
 
-def format_timeedit_categories(csv, start_line=3):
-    with open(csv, 'r+') as csv_file:
+def format_timeedit_categories(input_csv, output_csv, start_line=3):
+    with open(input_csv, 'r+') as csv_file:
         lines = csv_file.readlines()
 
-    with open('try2.csv', 'w') as csv_file:
+    with open(output_csv, 'w') as csv_file:
         csv_file.writelines(lines[start_line:])
 
         
-def initialize_week_schedule(file_name, relevant_activities,
-                             wanted_info = ['Kurs', 'Undervisningstyp', 'Information till student']):
+def initialize_week_schedule(file_name, relevant_activities = {
+        'TDP007': ['Laboration', 'Seminarium', 'Dugga'],
+        'TDP019': ['Handledning'],
+}, wanted_info = ['Kurs', 'Undervisningstyp', 'Information till student']):
     with open(file_name, 'r') as csv_file:
         week_schedule = {}
         csv_reader = csv.DictReader(csv_file)
@@ -60,7 +62,7 @@ def initialize_week_schedule(file_name, relevant_activities,
     return week_schedule
 
 
-def main(csv_file = sys.argv[1]):
+def main():
     # TODO: CLI setup for wanted values?
     relevant_activities = {
         'TDP007': ['Laboration', 'Seminarium', 'Dugga'],
@@ -70,7 +72,7 @@ def main(csv_file = sys.argv[1]):
     # wanted_info = ['Kurs', 'Undervisningstyp', 'Information till student']
 
     ws = initialize_week_schedule(csv_file, relevant_activities)
-    print(json.dumps(ws, indent=2)) 
+    
 
     
 if __name__ == "__main__":

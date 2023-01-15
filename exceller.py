@@ -44,7 +44,7 @@ def paint_area(ws_, color, start_row, end_row, start_col, end_col):
         for col in columns:
             cell_fill(ws_[f"{col}{row}"], color)
 
-            
+
 def paint_row(ws_, color, start_row, start_col, end_col):
     columns = list(map(chr, range(ord(start_col), ord(end_col)+1)))
     for col in columns:
@@ -85,6 +85,7 @@ def generate_week_schedule(ws_, start_row, schedule, assistants):
         bottom=Side(border_style='thin'),
     )
     # Generate grey Vecka X cells
+    avail = True
     for week in schedule:
         print(week + ':')
         current_column = 1
@@ -94,6 +95,9 @@ def generate_week_schedule(ws_, start_row, schedule, assistants):
         ws_[f'A{current_row}'].alignment = Alignment(horizontal='center')
         current_row += 1
         # Depth + längden på 
+
+
+        
         
         # Generate light grey activity schedule
         # Date Time Activity Course ExternalInfo (should be dependent on order)
@@ -107,17 +111,27 @@ def generate_week_schedule(ws_, start_row, schedule, assistants):
                     ws_.cell(row=current_row, column=current_column).alignment = Alignment(horizontal='center')
                     ws_.cell(row=current_row, column=current_column).border = thin_border
                     current_column += 1
-                                        
-                counter = 1
-                
+     
                 # Paint Green with assistant names
-                print(assistants)
+                counter = 1
+                # Hack to create "Tillgänglighet" cell
+                if avail == True:
+                    avail = False
+                    availability_row = current_row - 1
+                    availability_col = current_column + counter
+                    ws_.merge_cells(start_row=availability_row, start_column=availability_col, end_row=availability_row, end_column=availability_col+1)
+                    cell_fill(ws_.cell(row=availability_row, column=availability_col), color['white'])
+                    ws_.cell(row=availability_row, column=availability_col).value = 'Tillgänglighet'
+                    ws_.cell(row=availability_row, column=availability_col).alignment = Alignment(horizontal='center')
+                    ws_.cell(row=availability_row, column=availability_col).border = thin_border
+                    ws_.cell(row=availability_row, column=availability_col+1).border = thin_border
+                    
                 for assistant in assistants:
                     cell_fill(ws_.cell(row=current_row, column=current_column + counter), color['green'])
                     ws_.cell(row=current_row, column=current_column + counter).value = assistant
+                    ws_.cell(row=current_row, column=current_column + counter).alignment = Alignment(horizontal='center')
                     ws_.cell(row=current_row, column=current_column + counter).border = thin_border
                     counter += 1
-
                     
                 current_row += 1
         current_row += 1
@@ -138,7 +152,8 @@ def get_color_scheme():
         'lightyellow' : 'fff2cc',
         'lightred' : 'fce4d6',
         'lightblue' : 'd9e1f2',
-        'lightgrey' : 'e7e6e6'
+        'lightgrey' : 'e7e6e6',
+        'white' : 'ffffff',
     }
     return colors
 

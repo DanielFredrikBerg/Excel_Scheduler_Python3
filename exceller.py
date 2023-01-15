@@ -75,25 +75,57 @@ def generate_color_instructions(ws_, start_row, start_col, end_col):
     return row_counter
     
             
-def generate_week_schedule(ws_, start_row, schedule):
+def generate_week_schedule(ws_, start_row, schedule, assistants):
     color = get_color_scheme()
-    week_start_row = start_row + 2
+    current_row = start_row + 1
+    thin_border = Border(
+        left=Side(border_style='thin'),
+        right=Side(border_style='thin'),
+        top=Side(border_style='thin'),
+        bottom=Side(border_style='thin'),
+    )
     # Generate grey Vecka X cells
     for week in schedule:
         print(week + ':')
-        cell_fill(ws_[f'A{week_start_row}'], color['grey'])
-        set_cell_value(ws_, week_start_row, 'A', f'Vecka {week}')        
-        ws_[f'A{week_start_row}'].alignment = Alignment(horizontal='center')
-        week_start_row += 1
-    # Generate light grey activity schedule
-    # Date Time Activity Course ExternalInfo (should be dependent on order)
+        current_column = 1
+        cell_fill(ws_.cell(row=current_row, column=current_column), color['grey'])
+        # cell_fill(ws_[f'A{current_row}'], color['grey'])
+        set_cell_value(ws_, current_row, 'A', f'Vecka {week}')        
+        ws_[f'A{current_row}'].alignment = Alignment(horizontal='center')
+        current_row += 1
+        # Depth + längden på 
+        
+        # Generate light grey activity schedule
+        # Date Time Activity Course ExternalInfo (should be dependent on order)
         for date in schedule[week]:
-            #print(f'{date} {schedule[week][date]}')
             for session_time in schedule[week][date]:
-                 print(f'{date} {session_time} {(" ").join(schedule[week][date][session_time])}')
-                 week_start_row += 1
+                activity_list = [date, session_time] + schedule[week][date][session_time][0:2]
+                current_column = 1
+                for activity in activity_list:
+                    cell_fill(ws_.cell(row=current_row, column=current_column), color['grey'])
+                    ws_.cell(row=current_row, column=current_column).value = activity
+                    ws_.cell(row=current_row, column=current_column).alignment = Alignment(horizontal='center')
+                    ws_.cell(row=current_row, column=current_column).border = thin_border
+                    current_column += 1
+                                        
+                counter = 1
+                
+                # Paint Green with assistant names
+                print(assistants)
+                for assistant in assistants:
+                    cell_fill(ws_.cell(row=current_row, column=current_column + counter), color['green'])
+                    ws_.cell(row=current_row, column=current_column + counter).value = assistant
+                    ws_.cell(row=current_row, column=current_column + counter).border = thin_border
+                    counter += 1
+
                     
-        week_start_row += 1
+                current_row += 1
+        current_row += 1
+    return current_column
+
+
+# Need week_activites_count function in schedlr
+
 
 
 def get_color_scheme():
@@ -134,7 +166,7 @@ def main(filename = "tdp007_019_assistent_schema.xlsx", csv="tdp007_019.csv"):
 
     print(json.dumps(schedule, indent=2))
     # Create work schedule info
-    generate_week_schedule(ws1, end_instruction_row, schedule)
+    generate_week_schedule(ws1, end_instruction_row, schedule, assistants)
     
     
     wb.save(filename=xl)
